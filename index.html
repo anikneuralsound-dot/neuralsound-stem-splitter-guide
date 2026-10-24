@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Separate Vocals and Instruments from a Song | NeuralSound Guide</title>
+  <meta name="description" content="A step-by-step guide to splitting a song into vocals and instruments with the NeuralSound AI stem splitter, plus when to use the vocal remover or background music remover.">
+  <link rel="canonical" href="https://neuralsound.org/tools/music-separation">
+  <style>
+    :root {
+      --bg: #0d0b18;
+      --bg-2: #15122a;
+      --card: #1b1735;
+      --text: #f4f2ff;
+      --muted: #b9b4d6;
+      --accent: #8b7bff;
+      --accent-2: #c46bff;
+      --border: #2c2750;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 600px at 85% -10%, #2a1f5e 0%, transparent 60%), var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+    a { color: #b3a8ff; text-underline-offset: 3px; }
+    a:hover { color: #ffffff; }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+    header { border-bottom: 1px solid var(--border); background: rgba(13, 11, 24, 0.8); }
+    .bar { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
+    .brand { color: var(--text); text-decoration: none; font-weight: 700; font-size: 20px; letter-spacing: 0.2px; }
+    .brand span { color: var(--accent); }
+    .btn {
+      display: inline-block; padding: 12px 22px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; font-weight: 600; text-decoration: none; white-space: nowrap;
+    }
+    .btn:hover { color: #fff; filter: brightness(1.08); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .hero { padding: 72px 0 40px; }
+    .eyebrow { display: inline-block; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 700; }
+    h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.15; margin: 12px 0 18px; }
+    h2 { font-size: 28px; line-height: 1.25; margin: 0 0 14px; }
+    h3 { font-size: 20px; margin: 0 0 8px; }
+    .lead { font-size: 20px; color: var(--muted); max-width: 720px; }
+    .lead a { font-weight: 700; color: #fff; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+    section { padding: 40px 0; border-top: 1px solid var(--border); }
+    .muted { color: var(--muted); }
+    .wave { display: flex; align-items: center; gap: 4px; height: 70px; margin: 34px 0 0; }
+    .wave i { display: block; width: 6px; border-radius: 3px; background: linear-gradient(180deg, var(--accent-2), var(--accent)); opacity: 0.9; }
+    .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+    .steps li {
+      counter-increment: step; position: relative; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px 20px 74px;
+    }
+    .steps li::before {
+      content: counter(step); position: absolute; left: 22px; top: 20px;
+      width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2)); font-weight: 700; color: #fff;
+    }
+    .steps strong { display: block; margin-bottom: 2px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+    .card p { margin: 0 0 12px; color: var(--muted); }
+    .card .go { font-weight: 600; }
+    .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 16px; }
+    th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+    ul.tips { padding-left: 20px; margin: 0; }
+    ul.tips li { margin-bottom: 10px; }
+    .cta { margin: 40px 0 56px; padding: 36px; border-radius: 22px; text-align: center; border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(139, 123, 255, 0.18), rgba(196, 107, 255, 0.12)); }
+    .cta p { color: var(--muted); margin: 0 0 22px; }
+    footer { border-top: 1px solid var(--border); padding: 28px 0 40px; font-size: 15px; color: var(--muted); }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 10px; }
+    @media (max-width: 600px) {
+      body { font-size: 17px; }
+      .hero { padding: 48px 0 28px; }
+      .bar .btn { padding: 10px 16px; font-size: 15px; }
+      .steps li { padding: 18px 18px 18px 66px; }
+      .steps li::before { left: 18px; }
+      th, td { padding: 12px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="https://neuralsound.org/">Neural<span>Sound</span></a>
+      <a class="btn" href="https://neuralsound.org/tools/music-separation">Open the stem splitter</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" style="border-top:0">
+      <span class="eyebrow">How-to guide</span>
+      <h1>How to separate vocals and instruments from a song</h1>
+      <p class="lead">Every finished song is one mixed file, with the voice and every instrument blended together. The <a href="https://neuralsound.org/tools/music-separation">AI stem splitter</a> from NeuralSound pulls that mix apart into separate stems, so the vocals and the music each end up on their own.</p>
+      <div class="hero-actions">
+        <a class="btn" href="https://neuralsound.org/tools/music-separation">Split a song into stems</a>
+        <a class="btn btn-ghost" href="#steps">Read the steps</a>
+      </div>
+      <div class="wave" aria-hidden="true">
+        <i style="height:30%"></i><i style="height:55%"></i><i style="height:80%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:35%"></i><i style="height:70%"></i><i style="height:90%"></i><i style="height:50%"></i><i style="height:25%"></i><i style="height:65%"></i><i style="height:85%"></i><i style="height:40%"></i><i style="height:75%"></i><i style="height:55%"></i><i style="height:30%"></i><i style="height:60%"></i><i style="height:95%"></i><i style="height:45%"></i><i style="height:70%"></i><i style="height:35%"></i><i style="height:80%"></i><i style="height:50%"></i><i style="height:25%"></i><i style="height:65%"></i><i style="height:90%"></i><i style="height:40%"></i><i style="height:55%"></i><i style="height:30%"></i>
+      </div>
+    </section>
+
+    <section>
+      <h2>What "separating a song" means</h2>
+      <p>Music separation, also called stem separation, takes one mixed recording and splits it into separate parts called <strong>stems</strong>. A vocal stem is just the singing. An instrumental stem is everything except the singing. Once a song is split, you can mute, solo, remix or study any part of it.</p>
+      <p class="muted">It helps singers who want a backing track, musicians learning a part, remixers looking for clean material, and creators who need to tidy up the audio behind a video.</p>
+    </section>
+
+    <section id="steps">
+      <h2>How to split a song, step by step</h2>
+      <ol class="steps">
+        <li><strong>Open the stem splitter</strong>Go to the <a href="https://neuralsound.org/tools/music-separation">NeuralSound music separation tool</a> in your browser, or use the NeuralSound app on Android or iOS.</li>
+        <li><strong>Upload your song</strong>Choose the track you want to work on. Start with the best-quality copy you have, because a clean source gives cleaner stems.</li>
+        <li><strong>Let the AI separate it</strong>NeuralSound pulls the mix apart into separate stems, so the vocals and the music are no longer locked together.</li>
+        <li><strong>Preview, then download</strong>Listen to each part before you save it, so you know you have the one you need. Then download the stems you want to keep.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Only need one part? Pick the right tool</h2>
+      <p>The stem splitter gives you every part. If you already know the single result you want, these tools take you straight there.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="tag">Keep the music</span>
+          <h3>Vocal remover</h3>
+          <p>Takes the voice out of a song and leaves the instrumental, ready for karaoke, covers or practice.</p>
+          <a class="go" href="https://neuralsound.org/vocal-remover">Use the AI vocal remover &rarr;</a>
+        </div>
+        <div class="card">
+          <span class="tag">Keep the speech</span>
+          <h3>Background music remover</h3>
+          <p>Takes the music out from behind a voice in audio or video files, with 2-, 4- and 6-track modes and a preview before you download.</p>
+          <a class="go" href="https://neuralsound.org/background-music-remover">Remove background music &rarr;</a>
+        </div>
+        <div class="card">
+          <span class="tag">Keep every part</span>
+          <h3>AI stem splitter</h3>
+          <p>Splits a full song into separate stems, so you can decide later which parts to keep.</p>
+          <a class="go" href="https://neuralsound.org/tools/music-separation">Split a song into stems &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Quick reference</h2>
+      <table>
+        <thead>
+          <tr><th>You want to keep</th><th>Use this</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Every part of the song, separately</td><td><a href="https://neuralsound.org/tools/music-separation">AI stem splitter</a></td></tr>
+          <tr><td>The instrumental, without the singer</td><td><a href="https://neuralsound.org/vocal-remover">Vocal remover</a></td></tr>
+          <tr><td>A voice, without the music behind it</td><td><a href="https://neuralsound.org/background-music-remover">Background music remover</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Tips for cleaner results</h2>
+      <ul class="tips">
+        <li><strong>Use the best source you have.</strong> A clean, good-quality file separates better than a compressed or re-recorded copy.</li>
+        <li><strong>Listen on headphones.</strong> Small leftovers are easiest to hear in the quiet moments between phrases.</li>
+        <li><strong>Keep your original file.</strong> You can always go back and separate it again for a different part.</li>
+        <li><strong>Check the rights.</strong> If you publish a cover, remix or video that uses someone else's music, make sure you are allowed to use it.</li>
+      </ul>
+    </section>
+
+    <div class="cta">
+      <h2>Ready to split your first song?</h2>
+      <p>Upload a track and hear the vocals and the music on their own.</p>
+      <a class="btn" href="https://neuralsound.org/tools/music-separation">Try the AI stem splitter</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <nav aria-label="NeuralSound tools">
+        <a href="https://neuralsound.org/tools/music-separation">AI stem splitter</a>
+        <a href="https://neuralsound.org/vocal-remover">Vocal remover</a>
+        <a href="https://neuralsound.org/background-music-remover">Background music remover</a>
+        <a href="https://neuralsound.org/">NeuralSound home</a>
+      </nav>
+      <div>Questions: <a href="mailto:support@neuralsound.org">support@neuralsound.org</a></div>
+    </div>
+  </footer>
+
+</body>
+</html>
